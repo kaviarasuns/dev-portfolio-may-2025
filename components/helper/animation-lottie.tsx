@@ -7,7 +7,7 @@ import type { LottieComponentProps } from "lottie-react";
 const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 
 interface AnimationLottieProps {
-  animationPath: any; // Type for your animation data
+  animationPath: object; // More specific type for Lottie animation data
   width?: string | number;
 }
 

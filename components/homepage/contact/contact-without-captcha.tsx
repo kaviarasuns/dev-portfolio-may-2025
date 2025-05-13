@@ -1,10 +1,10 @@
 "use client";
 // @flow strict
-import { isValidEmail } from '@/utils/check-email';
-import emailjs from '@emailjs/browser';
-import { useState, ChangeEvent, FormEvent, FC } from 'react';
+import { isValidEmail } from "@/utils/check-email";
+import emailjs from "@emailjs/browser";
+import { useState, ChangeEvent, FormEvent, FC } from "react";
 import { TbMailForward } from "react-icons/tb";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 
 interface FormInput extends Record<string, string> {
   name: string;
@@ -19,9 +19,9 @@ interface FormError {
 
 const ContactWithoutCaptcha: FC = () => {
   const [input, setInput] = useState<FormInput>({
-    name: '',
-    email: '',
-    message: '',
+    name: "",
+    email: "",
+    message: "",
   });
   const [error, setError] = useState<FormError>({
     email: false,
@@ -34,7 +34,9 @@ const ContactWithoutCaptcha: FC = () => {
     }
   };
 
-  const handleSendMail = async (e: FormEvent<HTMLButtonElement>): Promise<void> => {
+  const handleSendMail = async (
+    e: FormEvent<HTMLButtonElement>
+  ): Promise<void> => {
     e.preventDefault();
     if (!input.email || !input.message || !input.name) {
       setError({ ...error, required: true });
@@ -43,14 +45,14 @@ const ContactWithoutCaptcha: FC = () => {
       return;
     } else {
       setError({ ...error, required: false });
-    };
+    }
 
     const serviceID = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID;
     const templateID = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID;
     const options = { publicKey: process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY };
 
     if (!serviceID || !templateID || !options.publicKey) {
-      toast.error('Email service configuration is missing');
+      toast.error("Email service configuration is missing");
       return;
     }
 
@@ -58,19 +60,24 @@ const ContactWithoutCaptcha: FC = () => {
       const res = await emailjs.send(serviceID, templateID, input, options);
 
       if (res.status === 200) {
-        toast.success('Message sent successfully!');
+        toast.success("Message sent successfully!");
         setInput({
-          name: '',
-          email: '',
-          message: '',
+          name: "",
+          email: "",
+          message: "",
         });
-      };
-    } catch (err: any) {
-      toast.error(err?.text || 'Failed to send message');
-    };
+      }
+    } catch (error: unknown) {
+      toast.error(
+        error instanceof Error ? error.message : "Failed to send message"
+      );
+    }
   };
 
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, field: keyof FormInput): void => {
+  const handleInputChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    field: keyof FormInput
+  ): void => {
     setInput({ ...input, [field]: e.target.value });
   };
 
@@ -81,7 +88,9 @@ const ContactWithoutCaptcha: FC = () => {
       </p>
       <div className="max-w-3xl text-white rounded-lg border border-[#464c6a] p-3 lg:p-5">
         <p className="text-sm text-[#d3d8e8]">
-          {"If you have any questions or concerns, please don't hesitate to contact me. I am open to any work opportunities that align with my skills and interests."}
+          {
+            "If you have any questions or concerns, please don't hesitate to contact me. I am open to any work opportunities that align with my skills and interests."
+          }
         </p>
         <div className="mt-6 flex flex-col gap-4">
           <div className="flex flex-col gap-2">
@@ -91,7 +100,7 @@ const ContactWithoutCaptcha: FC = () => {
               type="text"
               maxLength={100}
               required={true}
-              onChange={(e) => handleInputChange(e, 'name')}
+              onChange={(e) => handleInputChange(e, "name")}
               onBlur={checkRequired}
               value={input.name}
             />
@@ -105,15 +114,17 @@ const ContactWithoutCaptcha: FC = () => {
               maxLength={100}
               required={true}
               value={input.email}
-              onChange={(e) => handleInputChange(e, 'email')}
+              onChange={(e) => handleInputChange(e, "email")}
               onBlur={() => {
                 checkRequired();
                 setError({ ...error, email: !isValidEmail(input.email) });
               }}
             />
-            {error.email &&
-              <p className="text-sm text-red-400">Please provide a valid email!</p>
-            }
+            {error.email && (
+              <p className="text-sm text-red-400">
+                Please provide a valid email!
+              </p>
+            )}
           </div>
 
           <div className="flex flex-col gap-2">
@@ -123,18 +134,18 @@ const ContactWithoutCaptcha: FC = () => {
               maxLength={500}
               name="message"
               required={true}
-              onChange={(e) => handleInputChange(e, 'message')}
+              onChange={(e) => handleInputChange(e, "message")}
               onBlur={checkRequired}
               rows={4}
               value={input.message}
             />
           </div>
           <div className="flex flex-col items-center gap-2">
-            {error.required &&
+            {error.required && (
               <p className="text-sm text-red-400">
                 Email and Message are required!
               </p>
-            }
+            )}
             <button
               className="flex items-center gap-1 hover:gap-3 rounded-full bg-gradient-to-r from-pink-500 to-violet-600 px-5 md:px-12 py-2.5 md:py-3 text-center text-xs md:text-sm font-medium uppercase tracking-wider text-white no-underline transition-all duration-200 ease-out hover:text-white hover:no-underline md:font-semibold"
               role="button"
@@ -148,6 +159,6 @@ const ContactWithoutCaptcha: FC = () => {
       </div>
     </div>
   );
-}
+};
 
 export default ContactWithoutCaptcha;
